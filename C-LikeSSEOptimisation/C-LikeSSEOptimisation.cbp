@@ -11,8 +11,10 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="entry_fileDOUBLE output_file" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-msse4.1" />
 				</Compiler>
 			</Target>
 			<Target title="Release">

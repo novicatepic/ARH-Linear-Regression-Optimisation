@@ -30,8 +30,8 @@ int main() {
     if(fp != NULL) {
         fwrite(&num_elements, sizeof(int), 1, fp);
         for(int i = 0; i < num_elements; i++) {
-            xValues[i] = (double)generateRandomFloat(1.0, 100.0);
-            yValues[i] = (double)generateRandomFloat(1.0, 100.0);
+            xValues[i] = (double)5.0;//(double)generateRandomFloat(1.0, 100.0);
+            yValues[i] = (double)6.0;//(double)generateRandomFloat(1.0, 100.0);
         }
         fwrite(xValues, sizeof(double), num_elements, fp);
         fwrite(yValues, sizeof(double), num_elements, fp);

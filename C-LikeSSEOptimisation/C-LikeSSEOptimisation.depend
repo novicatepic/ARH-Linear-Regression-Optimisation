@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1672339583 source:c:\users\user\desktop\arh-p2\arhitektura-projekat2.2\c-likesseoptimisation\main.c
+	<immintrin.h>
+	<stdio.h>
+	<stdlib.h>
+

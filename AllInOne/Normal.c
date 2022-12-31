@@ -7,8 +7,8 @@
 
 int main(int argc, char **argv)
 {
-    /*clock_t start, end;
-    start = clock();*/
+    clock_t start, end;
+    /*start = clock();*/
     //double start = omp_get_wtime(); 
 
     int numElements = 0;
@@ -27,7 +27,8 @@ int main(int argc, char **argv)
         read = fread(yValues, sizeof(double), numElements, fp);
 
         
-        //#pragma omp parallel for reduction(+:sumX, sumY, sumXmultiplY, sumXSquare) num_threads(4)
+        clock_t start, end;
+        start = clock();
         for(int i = 0; i < numElements; i++) {
             sumXmultiplY += xValues[i] * yValues[i];
             sumY += yValues[i];
@@ -38,6 +39,10 @@ int main(int argc, char **argv)
         b = (sumXmultiplY - (sumY / sumX) * sumXSquare) / (sumX - (numElements / sumX) * sumXSquare);
         a = (sumY - numElements * b) / sumX;
         fclose(fp);
+
+        end = clock();
+        double duration = ((double)end-start)/CLOCKS_PER_SEC;
+        printf("NORMAL DURATION = %lf\n", duration);
 
 	    //printf("a = %4.2f", a);
 	    //printf("b = %4.2f", b);

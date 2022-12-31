@@ -26,18 +26,22 @@ int main(int argc, char **argv)
         read = fread(xValues, sizeof(double), numElements, fp);
         read = fread(yValues, sizeof(double), numElements, fp);
 
-        
-        #pragma omp parallel for reduction(+:sumX, sumY, sumXmultiplY, sumXSquare) num_threads(4)
+        double start = omp_get_wtime(); 
+        #pragma omp parallel for reduction(+:sumX, sumY, sumXmultiplY, sumXSquare) num_threads(2)
         for(int i = 0; i < numElements; i++) {
             sumXmultiplY += xValues[i] * yValues[i];
             sumY += yValues[i];
             sumX += xValues[i];
             sumXSquare = sumXSquare + (xValues[i] * xValues[i]);
         }
-
+        double diff = omp_get_wtime() - start; 
+	    printf("OPENMP DURATION = %lf\n", diff);
+        
         b = (sumXmultiplY - (sumY / sumX) * sumXSquare) / (sumX - (numElements / sumX) * sumXSquare);
         a = (sumY - numElements * b) / sumX;
         fclose(fp);
+
+        
 
 	    //printf("a = %4.2f", a);
 	    //printf("b = %4.2f", b);

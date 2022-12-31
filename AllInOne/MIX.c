@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <omp.h>
 
 typedef union {
     __m256d m256d;
@@ -40,18 +41,25 @@ int main(int argc, char *argv[])
         //printf("NUM ELEMENTS = %d\n", numElements);
 
 
-        clock_t start, end;
-        start = clock();
+        /*clock_t start, end;
+        start = clock();*/
 
         //WAS UNCOMMENTED
         /*rX.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
         rY.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
         rXtimesX.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
         rXtimesY.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);*/
+        double start = omp_get_wtime(); 
 
-        for(int i = 0; i < partialIterations; i++) {
-            int x1 = xValues[i], x2 = xValues[i+1], x3 = xValues[i+2], x4 = xValues[i+3];
-            int y1 = yValues[i], y2 = yValues[i+1], y3 = yValues[i+2], y4 = yValues[i+3];
+        int i;
+        #pragma omp parallel private(i) num_threads(2) 
+        {
+            i = omp_get_thread_num();
+            //for (int j = i * (numElements / 2); j < (i + 1) * (numElements / 2); j++) {
+            printf("%d\n", j);
+			//x[j] *= 2;
+            int x1 = xValues[j], x2 = xValues[j+1], x3 = xValues[j+2], x4 = xValues[j+3];
+            int y1 = yValues[j], y2 = yValues[j+1], y3 = yValues[j+2], y4 = yValues[j+3];
             tmp1.m256d = _mm256_set_pd(x1, x2, x3, x4);
             tmp2.m256d = _mm256_set_pd(y1, y2, y3, y4);
             tmp3.m256d = _mm256_set_pd(x1*x1, x2*x2, x3*x3, x4*x4);
@@ -61,6 +69,8 @@ int main(int argc, char *argv[])
             rXtimesX.m256d = _mm256_add_pd(rXtimesX.m256d, tmp3.m256d);
             rXtimesY.m256d = _mm256_add_pd(rXtimesY.m256d, tmp4.m256d);
         }
+        double diff = omp_get_wtime() - start; 
+	    printf("OPENMP DURATION = %lf\n", diff);
 
         for(int i = 0; i < leftoverIterations; i++) {
             rX.d[0] += xValues[numElements-i-1];
@@ -82,9 +92,9 @@ int main(int argc, char *argv[])
         b = (sumXmultiplY - (sumY / sumX) * sumXSquare) / (sumX - (numElements / sumX) * sumXSquare);
         a = (sumY - numElements * b) / sumX;
 
-        end = clock();
+        /*end = clock();
         double duration = ((double)end-start)/CLOCKS_PER_SEC;
-        printf("AVX DURATION = %lf\n", duration);  
+        printf("AVX DURATION = %lf\n", duration);  */
 
         fp = fopen(argv[2], "wb");
         if(fp != NULL) {
@@ -94,7 +104,7 @@ int main(int argc, char *argv[])
         } else {
             printf("Nested error");
         }
-
+        }
 
     } else {
         printf("Outer error!");

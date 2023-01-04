@@ -45,30 +45,53 @@ int main(int argc, char *argv[])
         start = clock();*/
 
         //WAS UNCOMMENTED
-        /*rX.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
+        rX.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
         rY.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
         rXtimesX.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
-        rXtimesY.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);*/
-        double start = omp_get_wtime(); 
-
+        rXtimesY.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
         int i;
+
+        double start = omp_get_wtime(); 
         #pragma omp parallel private(i) num_threads(2) 
         {
             i = omp_get_thread_num();
-            //for (int j = i * (numElements / 2); j < (i + 1) * (numElements / 2); j++) {
-            printf("%d\n", j);
-			//x[j] *= 2;
-            int x1 = xValues[j], x2 = xValues[j+1], x3 = xValues[j+2], x4 = xValues[j+3];
-            int y1 = yValues[j], y2 = yValues[j+1], y3 = yValues[j+2], y4 = yValues[j+3];
-            tmp1.m256d = _mm256_set_pd(x1, x2, x3, x4);
-            tmp2.m256d = _mm256_set_pd(y1, y2, y3, y4);
-            tmp3.m256d = _mm256_set_pd(x1*x1, x2*x2, x3*x3, x4*x4);
-            tmp4.m256d = _mm256_set_pd(x1*y1, x2*y2, x3*y3, x4*y4);
-            rX.m256d = _mm256_add_pd(rX.m256d, tmp1.m256d);
-            rY.m256d = _mm256_add_pd(rY.m256d, tmp2.m256d);
-            rXtimesX.m256d = _mm256_add_pd(rXtimesX.m256d, tmp3.m256d);
-            rXtimesY.m256d = _mm256_add_pd(rXtimesY.m256d, tmp4.m256d);
+            for (int j = i * (partialIterations / 2); j < (i + 1) * (partialIterations / 2); j++)
+		    {
+		   
+                #pragma omp critical
+                {
+                double x1 = xValues[j*4], x2 = xValues[j*4+1], x3 = xValues[j*4+2], x4 = xValues[j*4+3];
+                double y1 = yValues[j*4], y2 = yValues[j*4+1], y3 = yValues[j*4+2], y4 = yValues[j*4+3];    
+                tmp1.m256d = _mm256_set_pd(x1, x2, x3, x4);
+                tmp2.m256d = _mm256_set_pd(y1, y2, y3, y4);
+                tmp3.m256d = _mm256_set_pd(x1*x1, x2*x2, x3*x3, x4*x4);
+                tmp4.m256d = _mm256_set_pd(x1*y1, x2*y2, x3*y3, x4*y4);
+                rX.m256d = _mm256_add_pd(rX.m256d, tmp1.m256d);
+                rY.m256d = _mm256_add_pd(rY.m256d, tmp2.m256d);
+                rXtimesX.m256d = _mm256_add_pd(rXtimesX.m256d, tmp3.m256d);
+                rXtimesY.m256d = _mm256_add_pd(rXtimesY.m256d, tmp4.m256d);
+                }
+		    }           
         }
+
+        /*#pragma omp parallel for num_threads(2)
+	    for (int j = 0; j < partialIterations; j++)
+	    {
+            #pragma omp critical 
+            {
+                double x1 = xValues[j*4], x2 = xValues[j*4+1], x3 = xValues[j*4+2], x4 = xValues[j*4+3];
+                double y1 = yValues[j*4], y2 = yValues[j*4+1], y3 = yValues[j*4+2], y4 = yValues[j*4+3];
+                tmp1.m256d = _mm256_set_pd(x1, x2, x3, x4);
+                tmp2.m256d = _mm256_set_pd(y1, y2, y3, y4);
+                tmp3.m256d = _mm256_set_pd(x1*x1, x2*x2, x3*x3, x4*x4);
+                tmp4.m256d = _mm256_set_pd(x1*y1, x2*y2, x3*y3, x4*y4);
+                rX.m256d = _mm256_add_pd(rX.m256d, tmp1.m256d);
+                rY.m256d = _mm256_add_pd(rY.m256d, tmp2.m256d);
+                rXtimesX.m256d = _mm256_add_pd(rXtimesX.m256d, tmp3.m256d);
+                rXtimesY.m256d = _mm256_add_pd(rXtimesY.m256d, tmp4.m256d);
+            }        
+	    }*/
+
         double diff = omp_get_wtime() - start; 
 	    printf("OPENMP DURATION = %lf\n", diff);
 
@@ -104,7 +127,7 @@ int main(int argc, char *argv[])
         } else {
             printf("Nested error");
         }
-        }
+        
 
     } else {
         printf("Outer error!");

@@ -36,6 +36,11 @@ int main(int argc, char **argv)
             sumXSquare = sumXSquare + (xValues[i] * xValues[i]);
         }
 
+	/*printf("sumX = %4.2lf\n",sumX);
+        printf("sumY = %4.2lf\n",sumY);
+        printf("sumX^2 = %4.2lf\n",sumXSquare);
+        printf("sumX*Y = %4.2lf\n",sumXmultiplY);*/
+	
         b = (sumXmultiplY - (sumY / sumX) * sumXSquare) / (sumX - (numElements / sumX) * sumXSquare);
         a = (sumY - numElements * b) / sumX;
         fclose(fp);

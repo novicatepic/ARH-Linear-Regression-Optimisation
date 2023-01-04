@@ -16,7 +16,7 @@ double generateRandomFloat(double low, double high) {
     return (low + result * (high - low));
 }
 
-int num_elements = 200000000;
+int num_elements = 100000000;
 
 int main() {
     srand((int)time(NULL));
@@ -31,8 +31,8 @@ int main() {
         fwrite(&num_elements, sizeof(int), 1, fp);
         for(int i = 0; i < num_elements; i++) {
        		//printf("BLA\n");	
-            xValues[i] = (double)5.0;//(double)generateRandomFloat(1.0, 100.0);
-            yValues[i] = (double)6.0;//(double)generateRandomFloat(1.0, 100.0);
+            xValues[i] = /*(double)5.0;*/(double)generateRandomFloat(1.0, 100.0);
+            yValues[i] = /*(double)6.0;*/(double)generateRandomFloat(1.0, 100.0);
             //printf("BLA\n");
         }
         //printf("AFTERBLA");

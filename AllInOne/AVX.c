@@ -44,14 +44,16 @@ int main(int argc, char *argv[])
         start = clock();
 
         //WAS UNCOMMENTED
-        /*rX.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
+        rX.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
         rY.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
         rXtimesX.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
-        rXtimesY.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);*/
-
+        rXtimesY.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
+		
+	//printf("NUM PARTIAL = %d\n", partialIterations);
+	
         for(int i = 0; i < partialIterations; i++) {
-            int x1 = xValues[i], x2 = xValues[i+1], x3 = xValues[i+2], x4 = xValues[i+3];
-            int y1 = yValues[i], y2 = yValues[i+1], y3 = yValues[i+2], y4 = yValues[i+3];
+            double x1 = xValues[i*4], x2 = xValues[i*4+1], x3 = xValues[i*4+2], x4 = xValues[i*4+3];
+            double y1 = yValues[i*4], y2 = yValues[i*4+1], y3 = yValues[i*4+2], y4 = yValues[i*4+3];
             tmp1.m256d = _mm256_set_pd(x1, x2, x3, x4);
             tmp2.m256d = _mm256_set_pd(y1, y2, y3, y4);
             tmp3.m256d = _mm256_set_pd(x1*x1, x2*x2, x3*x3, x4*x4);
@@ -80,6 +82,7 @@ int main(int argc, char *argv[])
         printf("sumX*Y = %4.2lf\n",sumXmultiplY);*/
 
         b = (sumXmultiplY - (sumY / sumX) * sumXSquare) / (sumX - (numElements / sumX) * sumXSquare);
+        //b = (sumXmultiplY - (sumY *sumXSquare) / sumX) / (sumX - (numElements * sumXSquare) / sumX);
         a = (sumY - numElements * b) / sumX;
 
         end = clock();

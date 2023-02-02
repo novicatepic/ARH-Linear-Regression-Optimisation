@@ -1,8 +1,0 @@
-# depslib dependency file v1.0
-1672336544 source:c:\users\user\desktop\arh-p2\arhitektura-projekat2.2\c-numbergenerator\main.c
-	<stdio.h>
-	<stdlib.h>
-	<time.h>
-	<unistd.h>
-	<math.h>
-

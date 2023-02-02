@@ -16,7 +16,7 @@ double generateRandomFloat(double low, double high) {
     return (low + result * (high - low));
 }
 
-int num_elements = 100000000;
+int num_elements = 32000000;
 
 int main() {
     srand((int)time(NULL));

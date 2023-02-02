@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 
         end = clock();
         double duration = ((double)end-start)/CLOCKS_PER_SEC;
-        printf("NORMAL DURATION = %lf\n", duration);
+        //printf("NORMAL DURATION = %lf\n", duration);
 
 	    //printf("a = %4.2f", a);
 	    //printf("b = %4.2f", b);

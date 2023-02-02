@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 
         end = clock();
         double duration = ((double)end-start)/CLOCKS_PER_SEC;
-        printf("AVX DURATION = %lf\n", duration);  
+        //printf("AVX DURATION = %lf\n", duration);  
 
         fp = fopen(argv[2], "wb");
         if(fp != NULL) {

@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         int leftoverIterations = numElements % 4;
 
         m256d_union rX, rY, rXtimesX, rXtimesY;
-        m256d_union tmp1, tmp2, tmp3, tmp4;
+        m256d_union tmp1, tmp2, tmp3, tmp4, tmp5;
 
         //printf("NUM ELEMENTS = %d\n", numElements);
 
@@ -50,17 +50,16 @@ int main(int argc, char *argv[])
         rXtimesY.m256d = _mm256_set_pd(0.0, 0.0, 0.0, 0.0);
 		
 	//printf("NUM PARTIAL = %d\n", partialIterations);
-	
+        int tempCounter = 0;
         for(int i = 0; i < partialIterations; i++) {
-            double x1 = xValues[i*4], x2 = xValues[i*4+1], x3 = xValues[i*4+2], x4 = xValues[i*4+3];
-            double y1 = yValues[i*4], y2 = yValues[i*4+1], y3 = yValues[i*4+2], y4 = yValues[i*4+3];
-            tmp1.m256d = _mm256_set_pd(x1, x2, x3, x4);
-            tmp2.m256d = _mm256_set_pd(y1, y2, y3, y4);
-            tmp3.m256d = _mm256_set_pd(x1*x1, x2*x2, x3*x3, x4*x4);
-            tmp4.m256d = _mm256_set_pd(x1*y1, x2*y2, x3*y3, x4*y4);
+            tmp1.m256d = _mm256_loadu_pd(xValues+i*4);
             rX.m256d = _mm256_add_pd(rX.m256d, tmp1.m256d);
+            tmp2.m256d = _mm256_loadu_pd(yValues+i*4);
             rY.m256d = _mm256_add_pd(rY.m256d, tmp2.m256d);
-            rXtimesX.m256d = _mm256_add_pd(rXtimesX.m256d, tmp3.m256d);
+            tmp1.m256d = _mm256_mul_pd(tmp1.m256d, tmp1.m256d);
+            rXtimesX.m256d = _mm256_add_pd(rXtimesX.m256d, tmp1.m256d);
+            tmp4.m256d = _mm256_loadu_pd(xValues+i*4);
+            tmp4.m256d = _mm256_mul_pd(tmp4.m256d, tmp2.m256d);
             rXtimesY.m256d = _mm256_add_pd(rXtimesY.m256d, tmp4.m256d);
         }
 
@@ -75,14 +74,8 @@ int main(int argc, char *argv[])
         sumY = rY.d[0] + rY.d[1] + rY.d[2] + rY.d[3];
         sumXSquare = rXtimesX.d[0] + rXtimesX.d[1] + rXtimesX.d[2] + rXtimesX.d[3];
         sumXmultiplY = rXtimesY.d[0] + rXtimesY.d[1] +rXtimesY.d[2] +rXtimesY.d[3];
-        //double sumXSquare = 
-        /*printf("sumX = %4.2lf\n",sumX);
-        printf("sumY = %4.2lf\n",sumY);
-        printf("sumX^2 = %4.2lf\n",sumXSquare);
-        printf("sumX*Y = %4.2lf\n",sumXmultiplY);*/
 
         b = (sumXmultiplY - (sumY / sumX) * sumXSquare) / (sumX - (numElements / sumX) * sumXSquare);
-        //b = (sumXmultiplY - (sumY *sumXSquare) / sumX) / (sumX - (numElements * sumXSquare) / sumX);
         a = (sumY - numElements * b) / sumX;
 
         end = clock();
